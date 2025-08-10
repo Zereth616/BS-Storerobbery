@@ -76,11 +76,20 @@ end
 
 local function checkItem(name)
     if Config.Framework == "VORP" then
-        return exports.vorp_inventory:GetItem(name)
+        local items = exports.vorp_inventory:getInventoryItems(name)
+        -- If getInventoryItems returns table of items, check if any matches
+        for _, item in ipairs(items) do
+            if item.name == name and item.count > 0 then
+                return true
+            end
+        end
+        return false
     elseif Config.Framework == "RSG" then
-        return exports["rsg-inventory"]:HasItem(name,1)
+        return exports["rsg-inventory"]:HasItem(name, 1) == true
     end
+    return false
 end
+
 Citizen.CreateThread(function()
     while true do
         local sleep = 5000
